@@ -52,7 +52,7 @@
                 name: "Teens",
                 minAge: 12,
                 maxAge: 19,
-                movies: ["The Hunger Games", "Harry Potter", "Spider-Man", "The Fault in Our Stars", "Twilight", "Divergent", "The Maze Runner", "Percy Jackson", "The Chronicles of Narnia","the Fault in Our Stars"]
+                movies: ["The Hunger Games", "Harry Potter", "Spider-Man", "The Fault in Our Stars", "Twilight", "Divergent", "The Maze Runner", "Percy Jackson", "The Chronicles of Narnia", "The Fault in Our Stars"]
             },
             {
                 name: "Young Adults",
@@ -73,11 +73,12 @@
                 movies: ["The Best Exotic Marigold Hotel", "Quartet", "The Intern", "The Bucket List", "The Second Best Exotic Marigold Hotel", "Driving Miss Daisy", "On Golden Pond", "The Quartet", "A Walk in the Woods", "The Hundred-Foot Journey"]
             }
         ];
-        function getMovies() {
-            const ageInput = document.getElementById("ageInput");
-            const age = parseInt(ageInput.value);
+
+        const getMovies = () => {
+            const age = parseInt(document.getElementById("ageInput").value);
             const resultsDiv = document.getElementById("results");
             resultsDiv.innerHTML = "";
+
             if (isNaN(age)) {
                 resultsDiv.innerHTML = '<div class="alert alert-danger">Please enter a number</div>';
                 return;
@@ -86,33 +87,29 @@
                 resultsDiv.innerHTML = '<div class="alert alert-danger">Please enter age between 0 and 100</div>';
                 return;
             }
-            let foundGroup = null;
-            for (let i = 0; i < ageGroups.length; i++) {
-                if (age >= ageGroups[i].minAge && age <= ageGroups[i].maxAge) {
-                    foundGroup = ageGroups[i];
-                    break;
-                }
-            }
+
+            const foundGroup = ageGroups.find(function(group) {
+                return age >= group.minAge && age <= group.maxAge;
+            });
+
             if (!foundGroup) {
                 resultsDiv.innerHTML = '<div class="alert alert-warning">No movies found for your age</div>';
                 return;
             }
-            let recommendedMovies = [];
+
             const allMovies = foundGroup.movies.slice();
-            if (allMovies.length <= 10) {
-                recommendedMovies = allMovies;
-            } 
-            else {
-                for (let i = 0; i < 10; i++) {
+            const recommendedMovies = allMovies.length <= 10 
+                ? allMovies 
+                : Array.from({ length: 10 }, function() {
                     const randomIndex = Math.floor(Math.random() * allMovies.length);
-                    recommendedMovies.push(allMovies[randomIndex]);
-                    allMovies.splice(randomIndex, 1); 
-                }
-            }
+                    return allMovies.splice(randomIndex, 1)[0];
+                });
+
             let moviesHTML = "";
-            for (let i = 0; i < recommendedMovies.length; i++) {
-                moviesHTML += "<div class='movie-card bg-sucess'><h5>" + recommendedMovies[i] + "</h5></div>";
-            }
+            recommendedMovies.forEach(function(movie) {
+                moviesHTML += '<div class="movie-card"><h5>' + movie + '</h5></div>';
+            });
+
             resultsDiv.innerHTML = 
                 '<div class="card">' +
                     '<div class="card-header bg-dark text-white">' +
@@ -122,7 +119,8 @@
                         '<p>We recommend these 10 movies:</p>' +
                         moviesHTML +
                     '</div>' +
-                '</div>';   }
+                '</div>';
+        };
     </script>
 </body>
 </html>
