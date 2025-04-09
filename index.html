@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Recommender</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .movie-card {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .recommendation-section {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <h2 class="text-center">Movie Recommender</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="ageInput" class="form-label">Enter your age:</label>
+                            <input type="number" class="form-control" id="ageInput" placeholder="Between 0 and 100">
+                        </div>
+                        <button class="btn btn-dark" onclick="getMovies()">Get Movie Recommendations</button>
+                    </div>
+                </div>
+                <div id="results" class="recommendation-section"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const ageGroups = [
+            {
+                name: "Kids",
+                minAge: 0,
+                maxAge: 11,
+                movies: ["Toy Story", "Frozen", "Moana", "The Lion King", "Finding Nemo", "Coco", "Zootopia", "Inside Out", "Up", "Shrek"]
+            },
+            {
+                name: "Teens",
+                minAge: 12,
+                maxAge: 19,
+                movies: ["The Hunger Games", "Harry Potter", "Spider-Man", "The Fault in Our Stars", "Twilight", "Divergent", "The Maze Runner", "Percy Jackson", "The Chronicles of Narnia","the Fault in Our Stars"]
+            },
+            {
+                name: "Young Adults",
+                minAge: 20,
+                maxAge: 29,
+                movies: ["The Social Network", "La La Land", "The Perks of Being a Wallflower", "500 Days of Summer", "Eternal Sunshine", "The Great Gatsby", "Silver Linings Playbook", "The Notebook", "A Star is Born", "Crazy, Stupid, Love"]
+            },
+            {
+                name: "Adults",
+                minAge: 30,
+                maxAge: 44,
+                movies: ["Inception", "The Dark Knight", "Pulp Fiction", "The Shawshank Redemption", "Fight Club", "The Godfather", "Forrest Gump", "The Matrix", "Gladiator", "The Silence of the Lambs"]
+            },
+            {
+                name: "Seniors",
+                minAge: 45,
+                maxAge: 100,
+                movies: ["The Best Exotic Marigold Hotel", "Quartet", "The Intern", "The Bucket List", "The Second Best Exotic Marigold Hotel", "Driving Miss Daisy", "On Golden Pond", "The Quartet", "A Walk in the Woods", "The Hundred-Foot Journey"]
+            }
+        ];
+        function getMovies() {
+            const ageInput = document.getElementById("ageInput");
+            const age = parseInt(ageInput.value);
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = "";
+            if (isNaN(age)) {
+                resultsDiv.innerHTML = '<div class="alert alert-danger">Please enter a number</div>';
+                return;
+            }
+            if (age < 0 || age > 100) {
+                resultsDiv.innerHTML = '<div class="alert alert-danger">Please enter age between 0 and 100</div>';
+                return;
+            }
+            let foundGroup = null;
+            for (let i = 0; i < ageGroups.length; i++) {
+                if (age >= ageGroups[i].minAge && age <= ageGroups[i].maxAge) {
+                    foundGroup = ageGroups[i];
+                    break;
+                }
+            }
+            if (!foundGroup) {
+                resultsDiv.innerHTML = '<div class="alert alert-warning">No movies found for your age</div>';
+                return;
+            }
+            let recommendedMovies = [];
+            const allMovies = foundGroup.movies.slice();
+            if (allMovies.length <= 10) {
+                recommendedMovies = allMovies;
+            } 
+            else {
+                for (let i = 0; i < 10; i++) {
+                    const randomIndex = Math.floor(Math.random() * allMovies.length);
+                    recommendedMovies.push(allMovies[randomIndex]);
+                    allMovies.splice(randomIndex, 1); 
+                }
+            }
+            let moviesHTML = "";
+            for (let i = 0; i < recommendedMovies.length; i++) {
+                moviesHTML += "<div class='movie-card bg-sucess'><h5>" + recommendedMovies[i] + "</h5></div>";
+            }
+            resultsDiv.innerHTML = 
+                '<div class="card">' +
+                    '<div class="card-header bg-dark text-white">' +
+                        '<h3>For ' + foundGroup.name + ' (age ' + foundGroup.minAge + '-' + foundGroup.maxAge + ')</h3>' +
+                    '</div>' +
+                    '<div class="card-body">' +
+                        '<p>We recommend these 10 movies:</p>' +
+                        moviesHTML +
+                    '</div>' +
+                '</div>';   }
+    </script>
+</body>
+</html>
